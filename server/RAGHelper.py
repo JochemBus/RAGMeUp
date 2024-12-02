@@ -2,6 +2,8 @@ import hashlib
 import os
 import pickle
 
+from ResponseCitationVerifier import ResponseVerifier
+
 from langchain.retrievers import (ContextualCompressionRetriever,
                                   EnsembleRetriever)
 from langchain.retrievers.document_compressors import FlashrankRerank
@@ -66,6 +68,10 @@ class RAGHelper:
         self.xml_xpath = os.getenv("xml_xpath")
         self.json_text_content = os.getenv("json_text _content", "false").lower() == 'true'
         self.json_schema = os.getenv("json_schema")
+        
+        self.logger = logger
+        self.citation_verifier = None
+        self.citation_verification = os.getenv('citation_verification', 'True').lower() == 'true'
 
     @staticmethod
     def format_documents(docs):
@@ -524,3 +530,24 @@ class RAGHelper:
 
         # Add new chunks to the vector database
         self._add_to_vector_database(new_chunks)
+
+    def initialize_citation_verifier(self):
+        """Initialize the citation verifier if enabled."""
+        if self.citation_verification:
+            self.logger.info("Initializing citation verifier")
+            self.citation_verifier = ResponseVerifier()
+            
+    def verify_response_citations(self, response, docs):
+        """Verify citations in response against source documents."""
+        if not self.citation_verification or not self.citation_verifier:
+            return response, {}
+            
+        try:
+            modified_response, verification_results = self.citation_verifier.verify_response(
+                response,
+                docs
+            )
+            return modified_response, verification_results
+        except Exception as e:
+            self.logger.error(f"Error verifying citations: {str(e)}")
+            return response, {"error": str(e)}

@@ -38,6 +38,8 @@ class RAGHelperLocal(RAGHelper):
 
         # Initialize provenance method
         self.attributor = DocumentSimilarityAttribution() if os.getenv("provenance_method") == "similarity" else None
+        
+        self.initialize_citation_verifier()
 
     def _initialize_llm(self):
         """Initialize the LLM based on the available hardware and configurations."""
@@ -211,6 +213,21 @@ class RAGHelperLocal(RAGHelper):
         
         reply = self._invoke_rag_chain(user_query, llm_chain)
 
+        if fetch_new_documents:
+            # Extract answer part
+            end_string = os.getenv("llm_assistant_token")
+            answer = reply['text'][reply['text'].rindex(end_string)+len(end_string):]
+            
+            # Verify citations
+            modified_answer, verification_results = self.verify_response_citations(
+                answer,
+                reply['docs']
+            )
+            
+            # Update response
+            reply['text'] = reply['text'][:reply['text'].rindex(end_string)+len(end_string)] + modified_answer
+            reply['citation_verification'] = verification_results
+            
         if fetch_new_documents:
             self._track_provenance(user_query, reply, thread)
 

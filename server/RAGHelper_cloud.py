@@ -33,6 +33,7 @@ class RAGHelperCloud(RAGHelper):
     def __init__(self, logger):
         """Initialize the RAGHelperCloud instance with required models and configurations."""
         super().__init__(logger)
+        self.initialize_citation_verifier()
         self.rewrite_chain = None
         self.rewrite_ask_chain = None
         self.attributor = None
@@ -187,7 +188,21 @@ class RAGHelperCloud(RAGHelper):
 
         # Invoke RAG pipeline
         reply = rag_chain.invoke(user_query)
-
+        
+        if fetch_new_documents:
+            # Extract answer
+            answer = reply.get('answer')
+            
+            # Verify citations
+            modified_answer, verification_results = self.verify_response_citations(
+                answer,
+                reply.get('docs', [])
+            )
+            
+            # Update response
+            reply['answer'] = modified_answer
+            reply['citation_verification'] = verification_results
+            
         # Track provenance if needed
         if fetch_new_documents and os.getenv("provenance_method") in ['rerank', 'attention', 'similarity', 'llm']:
             self.track_provenance(reply, user_query)
