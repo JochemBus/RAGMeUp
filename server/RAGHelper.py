@@ -303,7 +303,9 @@ class RAGHelper:
         """
         return SemanticChunker(
             self.embeddings,
-            breakpoint_threshold_type=self.breakpoint_threshold_type
+            breakpoint_threshold_type=self.breakpoint_threshold_type,
+            breakpoint_threshold_amount=self.breakpoint_threshold_amount,
+            number_of_chunks=self.number_of_chunks
         )
 
     def _initialize_text_splitter(self):
