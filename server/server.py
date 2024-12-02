@@ -73,7 +73,7 @@ def chat():
         docs = response['docs']
 
     # Break up the response for OS LLMs
-    if isinstance(raghelper, RAGHelper):
+    if isinstance(raghelper, RAGHelperLocal):
         end_string = os.getenv("llm_assistant_token")
         reply = response['text'][response['text'].rindex(end_string)+len(end_string):]
 
