@@ -12,15 +12,7 @@ from ScoredCrossEncoderReranker import ScoredCrossEncoderReranker
 class CitationAwareReranker(ScoredCrossEncoderReranker):
     """Document reranker that considers both semantic similarity and citation relevance."""
     citation_weight: float = 0.3
-    class Config:
-        arbitrary_types_allowed = True
-        
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.citation_weight = float(os.getenv('citation_weight', '0.3'))
-        
-        # Enhanced citation patterns
-        self.citation_patterns = [
+    citation_patterns: list[str] = [
             # Standard formats
             r'Article\s*(\d+)(?:\s*\((\d+)\))?',    # Article 6(1)
             r'Art\.\s*(\d+)(?:\s*\((\d+)\))?',      # Art. 6(1)
@@ -56,6 +48,16 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
             # With roman numerals in subsection
             r'Art(?:icle)?\s*(\d+)(?:\s*\(([ivxIVX]+)\))?', # Article 6(iv)
         ]
+    
+    class Config:
+        arbitrary_types_allowed = True
+        
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.citation_weight = float(os.getenv('citation_weight', '0.3'))
+        
+        # Enhanced citation patterns
+        
 
     def _extract_citations(self, text: str) -> list[str]:
         """
