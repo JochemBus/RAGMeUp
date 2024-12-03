@@ -12,41 +12,42 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
     """Document reranker that considers both semantic similarity and citation relevance."""
     citation_weight: float = 0.3
     citation_patterns: list[str] = [
-            # Standard formats
-            r'Article\s*(\d+)(?:\s*\((\d+)\))?',    # Article 6(1)
-            r'Art\.\s*(\d+)(?:\s*\((\d+)\))?',      # Art. 6(1)
-            r'art\.\s*(\d+)(?:\s*\((\d+)\))?',      # art. 6(1)
-            r'§\s*(\d+)(?:\s*\((\d+)\))?',          # § 6(1)
-            
-            # Asterisk/special character formats
-            r'\\*Art\.\s(\d+)(?:\s*\((\d+)\))?[\]',   # *Art. 6(1)*
-            r'\Art\.\s(\d+)(?:\s*\((\d+)\))?[\]',     # Art. 6(1)
-            r'\\*Article\s(\d+)(?:\s*\((\d+)\))?[\]', # *Article 6(1)*
-            
-            # Different bracket styles
-            r'Art(?:icle)?\s*(\d+)(?:\s*\[(\d+)\])',      # Article 6[1]
-            r'Art(?:icle)?\s*(\d+)(?:\s*\{(\d+)\})',      # Article 6{1}
-            
-            # No space variations
-            r'Art(?:icle)?(\d+)\((\d+)\)',                # Article6(1)
-            r'Art(?:icle)?(\d+)\.(\d+)',                  # Article6.1
-            
-            # Period notation
-            r'Art(?:icle)?\s*(\d+)\.(\d+)',              # Article 6.1
-            
-            # Different letter cases
-            r'ARTICLE\s*(\d+)(?:\s*\((\d+)\))?',         # ARTICLE 6(1)
-            r'ART\.\s*(\d+)(?:\s*\((\d+)\))?',           # ART. 6(1)
-            
-            # Slash notation
-            r'Art(?:icle)?\s*(\d+)/(\d+)',               # Article 6/1
-            
-            # With sub-letters
-            r'Art(?:icle)?\s*(\d+)(?:\s*\((\d+[a-z])\))?',  # Article 6(1a)
-            
-            # With roman numerals in subsection
-            r'Art(?:icle)?\s*(\d+)(?:\s*\(([ivxIVX]+)\))?', # Article 6(iv)
-        ]
+        # Standard formats
+        r'Article\s*(\d+)(?:\s*\((\d+)\))?',       # Article 6(1)
+        r'Art\.\s*(\d+)(?:\s*\((\d+)\))?',         # Art. 6(1)
+        r'art\.\s*(\d+)(?:\s*\((\d+)\))?',         # art. 6(1)
+        r'§\s*(\d+)(?:\s*\((\d+)\))?',             # § 6(1)
+        
+        # Asterisk/special character formats
+        r'\*Art\.\s*(\d+)(?:\s*\((\d+)\))?\*',     # *Art. 6(1)*
+        r'Art\.\s*(\d+)(?:\s*\((\d+)\))?',         # Art. 6(1)
+        r'\*Article\s*(\d+)(?:\s*\((\d+)\))?\*',   # *Article 6(1)*
+        
+        # Different bracket styles
+        r'Art(?:icle)?\s*(\d+)(?:\s*\[(\d+)\])',   # Article 6[1]
+        r'Art(?:icle)?\s*(\d+)(?:\s*\{(\d+)\})',   # Article 6{1}
+        
+        # No space variations
+        r'Art(?:icle)?(\d+)\((\d+)\)',             # Article6(1)
+        r'Art(?:icle)?(\d+)\.(\d+)',               # Article6.1
+        
+        # Period notation
+        r'Art(?:icle)?\s*(\d+)\.(\d+)',            # Article 6.1
+        
+        # Different letter cases
+        r'ARTICLE\s*(\d+)(?:\s*\((\d+)\))?',       # ARTICLE 6(1)
+        r'ART\.\s*(\d+)(?:\s*\((\d+)\))?',         # ART. 6(1)
+        
+        # Slash notation
+        r'Art(?:icle)?\s*(\d+)/(\d+)',             # Article 6/1
+        
+        # With sub-letters
+        r'Art(?:icle)?\s*(\d+)(?:\s*\((\d+[a-z])\))?',  # Article 6(1a)
+        
+        # With roman numerals in subsection
+        r'Art(?:icle)?\s*(\d+)(?:\s*\(([ivxIVX]+)\))?'  # Article 6(iv)
+    ]
+
     
     class Config:
         arbitrary_types_allowed = True
