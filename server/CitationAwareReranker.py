@@ -11,7 +11,10 @@ from ScoredCrossEncoderReranker import ScoredCrossEncoderReranker
 
 class CitationAwareReranker(ScoredCrossEncoderReranker):
     """Document reranker that considers both semantic similarity and citation relevance."""
-
+    citation_weight: float = 0.3
+    class Config:
+        arbitrary_types_allowed = True
+        
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.citation_weight = float(os.getenv('citation_weight', '0.3'))
