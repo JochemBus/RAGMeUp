@@ -434,7 +434,7 @@ class RAGHelper:
             else:
                 self.logger.info("Setting up the CitationAwareReranker.")
                 self.compressor = CitationAwareReranker(
-                    model=HuggingFaceCrossEncoder(model_name=os.getenv("rerank_model")),
+                    model=HuggingFaceCrossEncoder(model_name="cross-encoder/ms-marco-TinyBERT-L-2-v2"),
                     top_n=int(os.getenv("rerank_k"))
                 )
                 
