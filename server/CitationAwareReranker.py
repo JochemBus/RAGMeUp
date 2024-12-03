@@ -17,7 +17,7 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         self.context_window_size = int(os.getenv('context_window_size', '50'))
 
         # Enhanced citation patterns
-        self.citation_patterns = _build_citation_patterns()
+        self.citation_patterns = self._build_citation_patterns()
 
     def _extract_citations(self, text: str) -> list[str]:
         """Extract citations from text."""
