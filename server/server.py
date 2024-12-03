@@ -92,7 +92,7 @@ def chat():
             's': doc.metadata['source'],
             'c': doc.page_content,
             **({'pk': doc.metadata['pk']} if 'pk' in doc.metadata else {}),
-            **({'provenance': float(doc.metadata['provenance'])} if 'provenance' in doc.metadata else {}),
+            **({'relevance_score': float(doc.metadata['relevance_score'])} if 'relevance_score' in doc.metadata else {}),
             **({'citation_verification': response.get('citation_verification', {})} if 'citation_verification' in response else {})
         } for doc in docs if 'source' in doc.metadata]
     else:
