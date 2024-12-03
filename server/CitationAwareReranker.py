@@ -1,5 +1,3 @@
-from _future_ import annotations
-
 import os
 import re
 from typing import Optional, Sequence
