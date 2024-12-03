@@ -97,6 +97,8 @@ def chat():
         } for doc in docs if 'source' in doc.metadata]
     else:
         new_docs = docs
+    print("new_docs:")
+    print(new_docs)
 
     result = {
         "reply": reply, 
