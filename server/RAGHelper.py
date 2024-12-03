@@ -25,6 +25,8 @@ from PostgresBM25Retriever import PostgresBM25Retriever
 from ScoredCrossEncoderReranker import ScoredCrossEncoderReranker
 from tqdm import tqdm
 
+from CitationAwareReranker import CitationAwareReranker
+
 
 class RAGHelper:
     """
@@ -425,19 +427,22 @@ class RAGHelper:
 
     def _initialize_reranker(self):
         """Initialize the reranking model based on environment settings."""
-        if self.rerank_model == "flashrank":
-            self.logger.info("Setting up the FlashrankRerank.")
-            self.compressor = FlashrankRerank(top_n=self.rerank_k)
-        else:
-            self.logger.info("Setting up the ScoredCrossEncoderReranker.")
-            self.compressor = ScoredCrossEncoderReranker(
-                model=HuggingFaceCrossEncoder(model_name=self.rerank_model),
-                top_n=self.rerank_k
+        if os.getenv("rerank") == "True":
+            if os.getenv("rerank_model") == "flashrank":
+                self.logger.info("Setting up the FlashrankRerank.")
+                self.compressor = FlashrankRerank(top_n=int(os.getenv("rerank_k")))
+            else:
+                self.logger.info("Setting up the CitationAwareReranker.")
+                self.compressor = CitationAwareReranker(
+                    model=HuggingFaceCrossEncoder(model_name=os.getenv("rerank_model")),
+                    top_n=int(os.getenv("rerank_k"))
+                )
+                
+            self.logger.info("Setting up the ContextualCompressionRetriever.")
+            self.rerank_retriever = ContextualCompressionRetriever(
+                base_compressor=self.compressor, 
+                base_retriever=self.ensemble_retriever
             )
-        self.logger.info("Setting up the ContextualCompressionRetriever.")
-        self.rerank_retriever = ContextualCompressionRetriever(
-            base_compressor=self.compressor, base_retriever=self.ensemble_retriever
-        )
 
     def _setup_retrievers(self):
         """Sets up the retrievers based on specified configurations."""
