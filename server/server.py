@@ -107,12 +107,12 @@ def chat():
         new_docs = docs
         
     docs_reply = [doc.metadata for doc in docs if doc.metadata.get('provenance', 0) > float(os.getenv("citation_similarity_threshold"))]
-    doc_reply_text = f"""
-    {'-' * 30}
+    doc_reply_text = f"""\n
+    {'-' * 60} \n
     The document(s) used in the reply are: \n
     """
     for doc in docs_reply:
-        doc_reply_text += f"Document: {doc.get('source')} with a provenance score of {doc.get('provenance')}\n"
+        doc_reply_text += f"- Document: {doc.get('source').split("/")[-1]} with a provenance score of {doc.get('provenance')}\n"
         
     reply += doc_reply_text
     result = {
