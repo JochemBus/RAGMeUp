@@ -46,10 +46,10 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         # With roman numerals in subsection
         r'Art(?:icle)?\s*(\d+)(?:\s*\(([ivxIVX]+)\))?'  # Article 6(iv)
     ]
-    citation_exact_match_weight=0.4
-    citation_context_weight=0.3
-    citation_proximity_weight=0.3
-    citation_context_window=200
+    exact_match_weight=0.4
+    context_weight=0.3
+    proximity_weight=0.3
+    context_window=200
     
     class Config:
         arbitrary_types_allowed = True
