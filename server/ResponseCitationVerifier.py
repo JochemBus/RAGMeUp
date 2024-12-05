@@ -4,6 +4,7 @@ import re
 from sentence_transformers import CrossEncoder
 from langchain.schema import Document
 import logging
+import os
 
 @dataclass
 class ResponseCitation:
@@ -85,7 +86,9 @@ class ResponseVerifier:
         
         # Configuration
         self.context_window = 100  # Characters before/after citation
+        self.context_window = os.getenv("context_window")
         self.similarity_threshold = 0.7
+        self.similarity_threshold = os.getenv("similarity_threshold")
         
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -134,6 +137,7 @@ class ResponseVerifier:
                     best_match = self._find_best_context_match(citation, matches)
                     print("best_math:")
                     print(best_match)
+                    
                     print("similarity_threshold")
                     print(self.similarity_threshold)
                     if best_match['score'] < self.similarity_threshold:
