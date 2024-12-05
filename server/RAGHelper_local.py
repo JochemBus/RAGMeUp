@@ -295,6 +295,7 @@ class RAGHelperLocal(RAGHelper):
     def _track_provenance(self, user_query, reply, thread):
         """Track the provenance of the LLM response and annotate documents with provenance scores."""
         provenance_method = os.getenv("provenance_method")
+        print("track prov")
         if provenance_method in ['rerank', 'attention', 'similarity', 'llm']:
             answer = self._extract_reply(reply)
             new_history = [{"role": msg["role"], "content": msg["content"].format_map(reply)} for msg in thread]
