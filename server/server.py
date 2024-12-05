@@ -112,7 +112,9 @@ def chat():
     The document(s) used in the reply are: \n
     """
     for doc in docs_reply:
-        doc_reply_text += f"- Document: {doc.get('source').split("/")[-1]} with a provenance score of {doc.get('provenance')}\n"
+        doc_name = doc.get('source').split('/')[-1]
+        doc_prov = doc.get('provenance')
+        doc_reply_text += f"- Document: {doc_name} with a provenance score of {doc_prov}\n"
         
     reply += doc_reply_text
     result = {
