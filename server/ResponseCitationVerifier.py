@@ -132,7 +132,10 @@ class ResponseVerifier:
                     
                     # Check context similarity for existing citations
                     best_match = self._find_best_context_match(citation, matches)
-                    
+                    print("best_math:")
+                    print(best_match)
+                    print("similarity_threshold")
+                    print(self.similarity_threshold)
                     if best_match['score'] < self.similarity_threshold:
                         # Handle context mismatch
                         verification_results[citation.text] = {
