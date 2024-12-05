@@ -104,6 +104,7 @@ def compute_rerank_provenance(reranker, query, documents, answer):
         full_text = answer
     
     # Score the documents, this will return the same document list but now with a relevance_score in metadata
+    
     scored_documents = reranker.compress_documents(documents, full_text)
     return scored_documents
 
