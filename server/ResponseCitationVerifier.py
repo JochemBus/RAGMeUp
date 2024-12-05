@@ -163,7 +163,8 @@ class ResponseVerifier:
                 except Exception as e:
                     self.logger.error(f"Error processing citation {citation.text}: {str(e)}")
                     continue
-            
+            print("modified_response")
+            print(modified_response)
             return modified_response, verification_results
             
         except Exception as e:
