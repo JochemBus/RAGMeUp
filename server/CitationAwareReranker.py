@@ -242,7 +242,7 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         print([
             doc.copy(update={"metadata": {
                 **doc.metadata,
-                "provenance": combined_score,
+                "relevance_score": combined_score,
                 "semantic_score": semantic_score,
                 "citation_score": citation_score,
                 "citations_found": doc_citations_list[i]
