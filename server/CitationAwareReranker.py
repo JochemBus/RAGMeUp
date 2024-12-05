@@ -51,6 +51,10 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
     proximity_weight=0.3
     context_window=200
     
+    context_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+    
+    context_window = 200
+    
     class Config:
         arbitrary_types_allowed = True
         
