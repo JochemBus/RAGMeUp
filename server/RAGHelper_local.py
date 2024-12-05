@@ -199,7 +199,6 @@ class RAGHelperLocal(RAGHelper):
         Returns:
             tuple: The conversation thread and the LLM response with potential provenance scores.
         """
-        print("local")
         fetch_new_documents = self._should_fetch_new_documents(user_query, history)
         thread = self._prepare_conversation_thread(history, fetch_new_documents)
         input_variables = self._determine_input_variables(fetch_new_documents)
@@ -218,17 +217,20 @@ class RAGHelperLocal(RAGHelper):
             # Extract answer part
             end_string = os.getenv("llm_assistant_token")
             answer = reply['text'][reply['text'].rindex(end_string)+len(end_string):]
+            print("answer")
             print(answer)
             # Verify citations
             modified_answer, verification_results = self.verify_response_citations(
                 answer,
                 reply['docs']
             )
+            print("modified answer")
             print(modified_answer)
             
             # Update response
             reply['text'] = reply['text'][:reply['text'].rindex(end_string)+len(end_string)] + modified_answer
             reply['citation_verification'] = verification_results
+            print("reply")
             print(reply)
             
         if fetch_new_documents:

@@ -42,4 +42,5 @@ class ScoredCrossEncoderReranker(BaseDocumentCompressor):
         scores = self.model.score([(query, doc.page_content) for doc in documents])
         docs_with_scores = list(zip(documents, scores))
         result = sorted(docs_with_scores, key=operator.itemgetter(1), reverse=True)
+        print("old doc meta happends")
         return [doc.copy(update={"metadata": {**doc.metadata, "relevance_score": score}}) for doc, score in result[:self.top_n]]

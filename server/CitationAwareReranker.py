@@ -238,7 +238,7 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         result = sorted(docs_with_scores, key=operator.itemgetter(1), reverse=True)
         
         # Return top_n documents with metadata
-        print("reranker meta happends")
+        print("doc meta happends")
         return [
             doc.copy(update={"metadata": {
                 **doc.metadata,
