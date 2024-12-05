@@ -89,6 +89,9 @@ def chat():
     # Make sure we format the docs properly
     print("original_docs")
     print(original_docs)
+    print("doc.metadata")
+    [print(doc.metadata) for doc in docs if 'source' in doc.metadata]
+    
     if len(original_docs) == 0 or 'docs' in response:
         new_docs = [{
             's': doc.metadata['source'],
