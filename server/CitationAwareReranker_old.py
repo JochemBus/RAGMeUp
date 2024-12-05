@@ -2,10 +2,11 @@ import re
 import os
 from typing import Optional, Sequence
 import operator
-from sentence_transformers import CrossEncoder
+
 from langchain_core.documents import Document
 from langchain_core.callbacks import Callbacks
 from ScoredCrossEncoderReranker import ScoredCrossEncoderReranker
+
 
 class CitationAwareReranker(ScoredCrossEncoderReranker):
     """Document reranker that considers both semantic similarity and citation relevance."""
@@ -46,36 +47,17 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         # With roman numerals in subsection
         r'Art(?:icle)?\s*(\d+)(?:\s*\(([ivxIVX]+)\))?'  # Article 6(iv)
     ]
+
     
     class Config:
         arbitrary_types_allowed = True
         
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        # Initialize base parameters
+    def _init_(self, **kwargs):
+        super()._init_(**kwargs)
         self.citation_weight = float(os.getenv('citation_weight', '0.3'))
         
-        # Initialize weights for different components
-        self.exact_match_weight = float(os.getenv('citation_exact_match_weight', '0.4'))
-        self.context_weight = float(os.getenv('citation_context_weight', '0.3'))
-        self.proximity_weight = float(os.getenv('citation_proximity_weight', '0.3'))
+        # Enhanced citation patterns
         
-        # Initialize context encoder for semantic similarity
-        self.context_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
-        
-        # Window size for context extraction
-        self.context_window = int(os.getenv('citation_context_window', '200'))
-
-    def _get_citation_context(self, citation: str, text: str) -> str:
-        """Extract context window around citation."""
-        citation_pos = text.lower().find(citation.lower())
-        if citation_pos == -1:
-            return text  # Return full text if citation not found
-            
-        start = max(0, citation_pos - self.context_window)
-        end = min(len(text), citation_pos + len(citation) + self.context_window)
-        
-        return text[start:end]
 
     def _extract_citations(self, text: str) -> list[str]:
         """
@@ -104,82 +86,26 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         
         return list(set(citations))  # Remove duplicates
 
-    def _calculate_proximity_score(self, citation: str, content: str, query: str) -> float:
-        """Calculate how close the citation is to query-relevant content."""
-        citation_pos = content.lower().find(citation.lower())
-        if citation_pos == -1:
-            return 0.0
-        
-        # Get context window around citation
-        window_size = self.context_window
-        citation_window = content[max(0, citation_pos - window_size):
-                                min(len(content), citation_pos + window_size)]
-        
-        # Calculate semantic similarity with query
-        similarity = self.context_encoder.predict([query, citation_window])
-        
-        # Adjust score based on position in document
-        relative_pos = citation_pos / len(content)
-        position_weight = 1 - (abs(0.5 - relative_pos) * 0.5)  # Prefer middle content
-        
-        return float(similarity * position_weight)
-
-    def _calculate_citation_score(self, query_citations: list[str], doc_citations: list[str], 
-                                query: str, doc_content: str) -> float:
+    def _calculate_citation_score(self, query_citations: list[str], doc_citations: list[str]) -> float:
         """
-        Calculate enhanced citation relevance score using semantic similarity and proximity.
+        Calculate citation relevance score.
         
         Args:
             query_citations: List of citations from query
             doc_citations: List of citations from document
-            query: Original query text
-            doc_content: Full document content
             
         Returns:
             Float score between 0 and 1
         """
         if not query_citations:
-            return 1.0
-        
-        citation_scores = []
-        
-        for qc in query_citations:
-            # Get semantic embeddings for contexts
-            query_citation_context = self._get_citation_context(qc, query)
-            best_match_score = 0.0
+            return 1.0  # No citations in query, neutral score
             
-            for dc in doc_citations:
-                doc_citation_context = self._get_citation_context(dc, doc_content)
-                
-                # Calculate three components:
-                # 1. Direct citation match
-                exact_match = 1.0 if qc.lower() == dc.lower() else 0.0
-                
-                # 2. Semantic similarity between citation contexts
-                context_similarity = self.context_encoder.predict([
-                    query_citation_context,
-                    doc_citation_context
-                ])
-                
-                # 3. Citation proximity to relevant content
-                proximity_score = self._calculate_proximity_score(dc, doc_content, query)
-                
-                # Combine scores with weights
-                combined_score = (
-                    exact_match * self.exact_match_weight +
-                    context_similarity * self.context_weight +
-                    proximity_score * self.proximity_weight
-                )
-                
-                best_match_score = max(best_match_score, combined_score)
-            
-            citation_scores.append(best_match_score)
-        
-        # Consider both average and maximum scores
-        avg_score = sum(citation_scores) / len(citation_scores)
-        max_score = max(citation_scores)
-        
-        return avg_score * 0.7 + max_score * 0.3
+        # Count matching citations
+        matches = sum(1 for qc in query_citations for dc in doc_citations 
+                     if qc.lower() == dc.lower())
+                     
+        # Normalize score based on query citations
+        return matches / len(query_citations) if query_citations else 0.0
 
     def compress_documents(
         self,
@@ -205,15 +131,10 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         query_citations = self._extract_citations(query)
         doc_citations_list = [self._extract_citations(doc.page_content) for doc in documents]
         
-        # Calculate citation scores with enhanced method
+        # Calculate citation scores
         citation_scores = [
-            self._calculate_citation_score(
-                query_citations, 
-                doc_citations,
-                query,
-                doc.page_content
-            )
-            for doc, doc_citations in zip(documents, doc_citations_list)
+            self._calculate_citation_score(query_citations, doc_citations)
+            for doc_citations in doc_citations_list
         ]
         
         # Combine scores with weighting
@@ -236,7 +157,7 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
                 "relevance_score": combined_score,
                 "semantic_score": semantic_score,
                 "citation_score": citation_score,
-                "citations_found": doc_citations_list[i]
+                "citations_found": doc_citations_list[i]  # Add found citations to metadata
             }}) 
             for i, (doc, combined_score, semantic_score, citation_score) in enumerate(result[:self.top_n])
         ]
