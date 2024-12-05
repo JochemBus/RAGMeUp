@@ -86,9 +86,9 @@ class ResponseVerifier:
         
         # Configuration
         self.context_window = 100  # Characters before/after citation
-        self.context_window = os.getenv("citation_context_window")
+        self.context_window = int(os.getenv("citation_context_window"))
         self.similarity_threshold = 0.7
-        self.similarity_threshold = os.getenv("citation_similarity_threshold")
+        self.similarity_threshold = float(os.getenv("citation_similarity_threshold"))
         
         # Set up logging
         self.logger = logging.getLogger(__name__)
