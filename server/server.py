@@ -86,7 +86,6 @@ def chat():
         new_history = [{"role": msg[0], "content": msg[1].format_map(response)} for msg in new_history]
         new_history.append({"role": "assistant", "content": response['answer']})
         reply = response['answer']
-    reply += "\n \n extra text"
     
     # Make sure we format the docs properly
     print("original_docs")
@@ -106,7 +105,16 @@ def chat():
         print(new_docs)
     else:
         new_docs = docs
-
+        
+    docs_reply = [doc for doc in docs if doc.get('provenance', 0) > float(os.getenv("citation_similarity_threshold"))]
+    doc_reply_text = f"""
+    {'-' * 30}
+    The document(s) used in the reply are: \n
+    """
+    for doc in docs_reply:
+        doc_reply_text += f"Document: {doc.get('source')} with a provenance score of {doc.get('provenance')}\n"
+        
+    reply += doc_reply_text
     result = {
         "reply": reply, 
         "history": new_history, 
