@@ -71,7 +71,8 @@ def chat():
         
     if len(docs) == 0 or 'docs' in response:
         docs = response['docs']
-
+    print("response:")
+    print(response)
     # Break up the response for OS LLMs
     if isinstance(raghelper, RAGHelperLocal):
         end_string = os.getenv("llm_assistant_token")
@@ -85,7 +86,7 @@ def chat():
         new_history = [{"role": msg[0], "content": msg[1].format_map(response)} for msg in new_history]
         new_history.append({"role": "assistant", "content": response['answer']})
         reply = response['answer']
-    
+    reply += "\n \n extra text"
     # Make sure we format the docs properly
     print("original_docs")
     print(original_docs)
