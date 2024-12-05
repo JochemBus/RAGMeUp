@@ -179,9 +179,12 @@ class ResponseVerifier:
         for pattern in compiled_patterns:
             for match in pattern.finditer(text):
                 start, end = match.span()
+                print("self.context_window")
+                print(self.context_window)
                 context_start = max(0, start - self.context_window)
                 context_end = min(len(text), end + self.context_window)
-                
+                print("context_start")
+                print(context_start)
                 # Extract the full reference
                 main_num = match.group(1) if match.group(1) else ""
                 sub_num = match.group(2) if len(match.groups()) > 1 and match.group(2) else ""
