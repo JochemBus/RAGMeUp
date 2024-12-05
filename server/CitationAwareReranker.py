@@ -239,6 +239,17 @@ class CitationAwareReranker(ScoredCrossEncoderReranker):
         
         # Return top_n documents with metadata
         print("doc meta happends")
+        print([
+            doc.copy(update={"metadata": {
+                **doc.metadata,
+                "provenance": combined_score,
+                "semantic_score": semantic_score,
+                "citation_score": citation_score,
+                "citations_found": doc_citations_list[i]
+            }}) 
+            for i, (doc, combined_score, semantic_score, citation_score) in enumerate(result[:self.top_n])
+        ])
+        
         return [
             doc.copy(update={"metadata": {
                 **doc.metadata,
