@@ -87,6 +87,7 @@ def chat():
         new_history.append({"role": "assistant", "content": response['answer']})
         reply = response['answer']
     reply += "\n \n extra text"
+    
     # Make sure we format the docs properly
     print("original_docs")
     print(original_docs)
