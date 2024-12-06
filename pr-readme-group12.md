@@ -18,10 +18,10 @@ Traditional RAG systems often struggle with the complexity of legal documents. T
 
 To illustrate these challenges and our solution, consider our example query "What does Article 6(1) say about data processing?" The screenshots below demonstrate how our improved system handles this:
 
-![Example Response 1](response1.jpg)
+![Example Response 1](response1.jpeg)
 *Image 1: Response with the original RAG framework
 
-![Example Response 2](response2.jpg)
+![Example Response 2](response2.jpeg)
 *Image 2: Response showing context mismatch detection and proper citation handling with source verification*
 
 Our implementation provides comprehensive citation handling, including clear verification of references, explicit marking of context mismatches, and proper source attribution. in cases where the complete article text isn't directly available, the system maintains accuracy by clearly indicating limitations and verification status. Our approach consists of 2 solutions
