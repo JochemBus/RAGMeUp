@@ -71,8 +71,6 @@ def chat():
         
     if len(docs) == 0 or 'docs' in response:
         docs = response['docs']
-    print("response:")
-    print(response)
     # Break up the response for OS LLMs
     if isinstance(raghelper, RAGHelperLocal):
         end_string = os.getenv("llm_assistant_token")
@@ -88,10 +86,6 @@ def chat():
         reply = response['answer']
     reply += "\n \n extra text"
     # Make sure we format the docs properly
-    print("original_docs")
-    print(original_docs)
-    print("doc.metadata")
-    [print(doc.metadata) for doc in docs if 'source' in doc.metadata]
     
     if len(original_docs) == 0 or 'docs' in response:
         new_docs = [{
@@ -101,8 +95,6 @@ def chat():
             **({'provenance': float(doc.metadata['provenance'])} if 'provenance' in doc.metadata else {}),
             **({'citation_verification': response.get('citation_verification', {})} if 'citation_verification' in response else {})
         } for doc in docs if 'source' in doc.metadata]
-        print("new_docs:")
-        print(new_docs)
     else:
         new_docs = docs
 

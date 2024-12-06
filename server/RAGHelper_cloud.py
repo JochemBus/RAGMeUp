@@ -144,7 +144,6 @@ class RAGHelperCloud(RAGHelper):
         Returns:
             tuple: A tuple containing the conversation thread and the reply.
         """
-        print("cloud")
         fetch_new_documents = self.should_fetch_new_documents(user_query, history)
 
         thread = self.create_interaction_thread(history, fetch_new_documents)
@@ -193,18 +192,15 @@ class RAGHelperCloud(RAGHelper):
         if fetch_new_documents:
             # Extract answer
             answer = reply.get('answer')
-            print(answer)
             # Verify citations
             modified_answer, verification_results = self.verify_response_citations(
                 answer,
                 reply.get('docs', [])
             )
-            print(modified_answer)
             
             # Update response
             reply['answer'] = modified_answer
             reply['citation_verification'] = verification_results
-            print(reply)
             
         # Track provenance if needed
         if fetch_new_documents and os.getenv("provenance_method") in ['rerank', 'attention', 'similarity', 'llm']:

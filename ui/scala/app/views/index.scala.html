@@ -131,9 +131,6 @@
           if ('provenance' in doc) {
               linktext += ' (provenance: ' + String(Math.round(doc['provenance'] * 100000) / 100000) + ')';
           }
-          else if ('relevance_score' in doc) {
-              linktext += ' (relevance_score: ' + String(Math.round(doc['relevance_score'] * 100000) / 100000) + ')';
-          }
           var content = unicodeToChar(doc['c']).substring(0, 100);
           if (doc['c'].length > 100) {
               content += ' ...';
