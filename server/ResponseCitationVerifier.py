@@ -4,6 +4,7 @@ import re
 from sentence_transformers import CrossEncoder
 from langchain.schema import Document
 import logging
+import os
 
 @dataclass
 class ResponseCitation:
@@ -85,7 +86,9 @@ class ResponseVerifier:
         
         # Configuration
         self.context_window = 100  # Characters before/after citation
+        self.context_window = int(os.getenv("citation_context_window"))
         self.similarity_threshold = 0.7
+        self.similarity_threshold = float(os.getenv("citation_similarity_threshold"))
         
         # Set up logging
         self.logger = logging.getLogger(__name__)
