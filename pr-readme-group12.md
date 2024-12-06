@@ -30,7 +30,7 @@ Our implementation provides comprehensive citation handling, including clear ver
 
 Our implementation uses a hybrid approach that combines semantic understanding with citation awareness. This hybrid method enhances traditional semantic search with citation-specific information, providing more accurate and contextually relevant results for legal document queries.
 
-The system considers semantic relevance and citation accuracy, weighting both factors to produce optimal rankings. This approach proves particularly effective for course material queries where both topical relevance and precise citation handling are crucial.
+The system considers semantic relevance and citation accuracy, weighing both factors to produce optimal rankings. This approach proves particularly effective for course material queries where both topical relevance and precise citation handling are crucial.
 
 ## Implementation
 
@@ -55,7 +55,7 @@ context_similarity = self.model.predict([
     doc_citation_context
 ])
 ```
-This aspect evaluates how citations are used within their surrounding text, allowing the system to identify proper citation usage, even when the phrasing differs from the original source. We utilize the existing reranker model to perform this semantic comparison effectively.
+This aspect evaluates how citations are used within their surrounding text, allowing the system to identify proper citation usage, even when the phrasing differs from the original source. We utilize the cross-encoder/ms-marco-MiniLM-L-6-v2 model for semantic comparison.
 
 The third component, proximity scoring (30%), examines the relationship between citations and query-relevant content:
 ```python
@@ -76,7 +76,7 @@ This formula gives precedence to consistent performance across multiple citation
 
 ### 2. ResponseCitationVerifier
 
-The ResponseCitationVerifier represents a imrpovement in ensuring the accuracy of citations in LLM responses. This component implements a comprehensive verification system that examines both the presence and proper usage of citations.
+The ResponseCitationVerifier represents an imrpovement in ensuring the accuracy of citations in LLM responses. This component implements a comprehensive verification system that examines both the presence and proper usage of citations.
 
 #### Citation Detection and Context Analysis
 
@@ -190,9 +190,9 @@ Our roadmap for future improvements focuses on two main areas:
 
 The first priority is the integration of semantic chunking capabilities. The current implementation, while effective, uses basic chunking methods that can occasionally split citations across chunks. We've tried integrating the Semantic Chunker, but had several problems with its implementation (as tracked in langchain-ai/langchain#26221). Due to time constraints we were not able to fix this, which led into using the default chunking methods.
 
-The second area of focus is more improved citation understanding through several improvement techniques, by building support for hierarchical citation validation. We've also exploring integration with legal document ontologies and citation graph analysis to better understand relationships between different articles and sections.
+The second area of focus, is a more improved citation understanding through several improvement techniques, by means of building support for hierarchical citation validation. We would also like to explore integration with legal document ontologies and citation graph analysis to better understand relationships between different articles and sections.
 
-One key point which we did not fix but we are aware of is the dependency of the provenance with method set to reranking. Our new reranker uses a combined score, which is passed to the metadata to be able to maintain the inner workings of the provenance. We did not further investigate the provenance functionalities for our improvements.
+One key point which we did not fix, but we are aware of, is the dependency of the provenance with method set to reranking. Our new reranker uses a combined score, which is passed to the metadata to be able to maintain the inner workings of the provenance. We did not further investigate the provenance functionalities for our improvements.
 
 These improvements will improve the system's ability to handle complex legal documentation while maintaining high accuracy in citation handling and verification, making it an even more effective study companion for the IPP course.
 
