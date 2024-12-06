@@ -20,6 +20,15 @@ else:
 
 @app.route("/add_document", methods=['POST'])
 def add_document():
+    """
+    Add a document to the RAG helper.
+
+    This endpoint expects a JSON payload containing the filename of the document to be added.
+    It then invokes the addDocument method of the RAG helper to store the document.
+
+    Returns:
+        JSON response with the filename and HTTP status code 200.
+    """
     json = request.get_json()
     filename = json['filename']
 
@@ -53,6 +62,15 @@ def query():
 
 @app.route("/chat", methods=['POST'])
 def chat():
+    """
+    Handle chat interactions with the RAG system.
+
+    This endpoint processes the user's prompt, retrieves relevant documents,
+    and returns the assistant's reply along with conversation history.
+
+    Returns:
+        JSON response containing the assistant's reply, history, documents, and other metadata.
+    """
     json = request.get_json()
     prompt = json['prompt']
     history = json.get('history', [])
@@ -112,6 +130,15 @@ def chat():
 
 @app.route("/get_documents", methods=['GET'])
 def get_documents():
+    """
+    Retrieve a list of documents from the data directory.
+
+    This endpoint checks the configured data directory and returns a list of files
+    that match the specified file types.
+
+    Returns:
+        JSON response containing the list of files.
+    """
     data_dir = os.getenv('data_directory')
     file_types = os.getenv("file_types").split(",")
     files =  [f for f in os.listdir(data_dir) if os.path.isfile(os.path.join(data_dir, f)) and os.path.splitext(f)[1][1:] in file_types]
@@ -119,6 +146,16 @@ def get_documents():
 
 @app.route("/get_document", methods=['POST'])
 def get_document():
+    """
+    Retrieve a specific document from the data directory.
+
+    This endpoint expects a JSON payload containing the filename of the document to retrieve.
+    If the document exists, it is sent as a file response.
+
+    Returns:
+        JSON response with the error message and HTTP status code 404 if not found,
+        otherwise sends the file as an attachment.
+    """
     json = request.get_json()
     filename = json['filename']
     data_dir = os.getenv('data_directory')
@@ -134,6 +171,15 @@ def get_document():
 
 @app.route("/delete", methods=['POST'])
 def delete_document():
+    """
+    Delete a specific document from the data directory and the Milvus vector store.
+
+    This endpoint expects a JSON payload containing the filename of the document to delete.
+    It removes the document from the Milvus collection and the filesystem.
+
+    Returns:
+        JSON response with the count of deleted documents.
+    """
     json = request.get_json()
     filename = json['filename']
     data_dir = os.getenv('data_directory')
